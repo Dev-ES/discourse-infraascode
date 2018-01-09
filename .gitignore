@@ -1,0 +1,4 @@
+images/playbook/roles/discourse/files/.env
+terraform/.terraform
+terraform.tfstate
+terraform.tfstate.*

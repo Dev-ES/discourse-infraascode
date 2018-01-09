@@ -1,0 +1,15 @@
+[Unit]
+Description=Discourse
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=on-failure
+WorkingDirectory=/opt/discourse
+
+ExecStart=/usr/local/bin/docker-compose -f docker-compose.yml up  $APP
+
+ExecStop=/usr/local/bin/docker-compose -f docker-compose.yml stop $APP
+
+[Install]
+WantedBy=multi-user.target

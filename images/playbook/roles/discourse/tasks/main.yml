@@ -1,0 +1,50 @@
+---
+- name: "Add discourse config folder"
+  file:
+    path: "/opt/discourse"
+    state: directory
+    owner: root
+    group: root
+    mode: 0754
+    recurse: yes
+
+
+- name: Copy service
+  template:
+    src: discourse.service
+    dest: /etc/systemd/system/discourse.service
+    owner: root
+    group: root
+    mode: 0644
+
+
+- name: Copy .env
+  copy:
+    src: .env
+    dest: /opt/discourse/.env
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Copy docker-compose
+  copy:
+    src: docker-compose.yml
+    dest: /opt/discourse/docker-compose.yml
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Registering discourse"
+  service:
+    name: "discourse"
+    enabled: true
+
+- name: pull images
+  command: docker-compose pull
+  args:
+    chdir: /opt/discourse/
+
+- name: migrations
+  command: docker-compose -f docker-compose.yml run discourse bash -c "sleep 3 && rake db:migrate assets:precompile"
+  args:
+    chdir: /opt/discourse/

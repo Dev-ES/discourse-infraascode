@@ -1,0 +1,34 @@
+discourse:
+  image: devescom/discourse
+  ports:
+    - "80:3000"
+  volumes:
+    - /opt/discourse/assets:/usr/src/app/public/assets
+    - /opt/discourse/uploads:/usr/src/app/public/uploads
+    - /opt/discourse/backups:/usr/src/app/public/backups
+    - /opt/discourse/logs:/usr/src/app/log
+  links:
+    - postgres
+    - redis
+  env_file:
+    - .env
+sidekiq:
+  image: devescom/discourse
+  command: sidekiq -c 3 -v
+  links:
+    - postgres
+    - redis
+  env_file:
+    - .env
+  volumes_from:
+    - discourse
+postgres:
+  image: postgres:9.4
+  environment:
+    - POSTGRES_USER=discourse
+  env_file:
+    - .env
+  volumes:
+    - /opt/discourse/postgres/data:/var/lib/postgresql/data
+redis:
+  image: redis:2.8
